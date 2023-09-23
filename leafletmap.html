@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Leaflet Web Map</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+ 
+   <!--memanggil bootstrap -->
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!--memanggil geocoder-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+	<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+ <style>
+    body
+    {
+        position: relative;
+        height: 100%;
+        background-color: #273a43;
+    }
+
+    html
+    {
+        scroll-behavior: smooth;
+    }
+
+    #map {
+    width: 100%;
+    height: 100vh;
+    } 
+ </style>
+
+</head>
+
+<body>
+
+    <!--menambahkan komponen navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="position: relative">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" datatarget="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)
+        </span></a>
+        </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+        <button
+        class="btn btn-outline-success my-2 my-sm-0">
+        Lokasi saya
+        </button>
+        </form>
+        </div>
+        </nav>
+        
+    <!--menambahkan komponen Map --> 
+        <div id="map"></div>
+        <script src="jogja.js"></script>
+
+    <script>
+        var marker1 = L.marker([-7.7639847, 110.3704093]).bindPopup('Teknik Geodesi UGM'),
+        marker2 = L.marker([-7.759350, 110.371041]).bindPopup('Kos Putri Inung 2'),
+        marker3 = L.marker([-7.758260, 110.399503]).bindPopup('Pakuwon Mall Yogyakarta'),
+        marker4 = L.marker([-7.782543, 110.401076]).bindPopup('Ambarrukmo Plaza Yogyakarta');
+        var jogja = L.layerGroup([marker1, marker2, marker3, marker4]);
+        var overlayMaps = {
+        "Jogja": jogja
+        };
+
+        var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+        });
+
+        var osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'});
+
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "OpenStreetMap.HOT": osmHOT
+        };
+
+        var map = L.map('map', {
+            center: [-7.79558, 110.36949],
+            zoom: 10,
+            layers: [jogja, osm]
+        });
+        
+        L.geoJSON(jogjageojson,{
+        style: function(feature) {
+            switch (feature.properties.KABUPATEN) {
+                case 'Gunung Kidul': return {color: "#ff9900"};
+                case 'Sleman': return {color: "red"};
+                case 'Bantul': return {color: "blue"};
+                case 'Yogyakarta': return {color: "green"};
+                case 'Kulon Progo': return {color: "magenta"};
+            }
+        },
+        onEachFeature: function (feature, layer) {
+        layer.bindPopup(
+        'Kecamatan adalah ' +
+        '<strong>' +
+        feature.properties.KECAMATAN +
+        '</strong>'
+        );
+        }
+        }).addTo(map);
+
+        var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+</script>
+</body>
+</html>
